@@ -1,21 +1,31 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NovelDownloader
 {
-	class Program
+	public partial class Program
 	{
-		static void Main(string[] args)
+		public static void Main(string[] args)
 		{
-
-			Console.WriteLine(args.Length);
-			foreach (string arg in args)
-				Console.WriteLine(arg);
-			Console.ReadKey(false);
-
+			Console.WriteLine("Novel Downloader v1.0");
+			Welcome();
+			string userInput = null;
+			do
+			{
+				Console.Write(">");
+				userInput = Console.ReadLine();
+				try
+				{
+					if (userInput.Trim() == ".help") Help();
+					else Process(userInput);
+				} 
+				catch(Exception err) { Console.WriteLine(err.Message); }
+			} while (userInput.Trim() != ".exit");
 		}
+		
 	}
 }
