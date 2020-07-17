@@ -48,7 +48,7 @@ namespace NovelsSigma
 		public static void Version()
 		{
 			Console.WriteLine("You are at 'version' interface.");
-			Console.WriteLine("Novels Sigma, version 1.0 .");
+			Console.WriteLine("Novels Sigma, version 1.0.0 .");
 			HorizontalLine();
 			Welcome();
 		}
