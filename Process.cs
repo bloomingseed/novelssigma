@@ -52,7 +52,7 @@ namespace NovelsSigma
 								string raw = link.Attributes["href"].Value;
 								raw = raw.Substring(0, raw.Length - 1);
 								string fileName = raw.Split('/').Last();
-								Console.WriteLine("Downloading file " + (count + 1) + ": " + fileName + ".html");
+								Console.WriteLine("\tDownloading file " + (count + 1) + ": " + fileName + ".html");
 								//start downloading
 								client.DownloadFile(frontpageUrl.GetLeftPart(UriPartial.Authority) + raw,
 									Path.Combine(destinationFolder.AbsolutePath, fileName + ".html"));
@@ -131,7 +131,7 @@ namespace NovelsSigma
 				}
 				else throw new Exception("Not supported website");
 				//download attempt success
-				Console.WriteLine("Download completed!");
+				Console.WriteLine("Download completed! Downloaded files are saved at: \n"+destinationFolder.AbsolutePath);
 			}
 			catch(UnauthorizedAccessException err) { throw err; }
 			catch (Exception err) { throw err; }
