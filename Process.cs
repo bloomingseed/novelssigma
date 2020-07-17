@@ -8,7 +8,7 @@ using HtmlAgilityPack;
 using HapCss;
 using System.IO;
 
-namespace NovelDownloader
+namespace NovelsSigma
 {
 	public partial class Program
 	{
