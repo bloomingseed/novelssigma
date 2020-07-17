@@ -25,9 +25,8 @@ namespace NovelDownloader
 				IList<HtmlNode> anchorNode = null;
 				IList<HtmlNode> links = null;
 				int count = 0;
-				//destinationFolder = new Uri(Directory.CreateDirectory(Path.Combine(destinationFolder.AbsolutePath, DateTime.Now.ToString("yyyyMMddTHHmm"))).FullName);
 				string novelName = frontpageUrl.Segments[1];
-				destinationFolder = new Uri(Directory.CreateDirectory(destinationFolder.AbsolutePath + "/" + novelName).FullName);
+				destinationFolder = new Uri(Directory.CreateDirectory(destinationFolder.AbsolutePath + "/" + frontpageUrl.Host + "/" + novelName).FullName);
 				if (frontpageUrl.Host == "sstruyen.com")
 				{
 					do
@@ -38,9 +37,13 @@ namespace NovelDownloader
 							resource = webClient.DownloadString(frontpageUrl);
 						}
 						frontpage.LoadHtml(resource);
-							anchorNode = frontpage.QuerySelectorAll(".next");
-							links = frontpage.QuerySelectorAll(".list-chap a");
+						//find link to next frontpage
+						anchorNode = frontpage.QuerySelectorAll(".next");
+						//find links to chapters within current frontpage
+						links = frontpage.QuerySelectorAll(".list-chap a");
+						//download chapters from links
 						Console.WriteLine("Downloading chapters from " + frontpageUrl + "..");
+							//download loop
 						using (WebClient client = new WebClient())
 							foreach (HtmlNode link in links)
 							{
@@ -50,6 +53,7 @@ namespace NovelDownloader
 								raw = raw.Substring(0, raw.Length - 1);
 								string fileName = raw.Split('/').Last();
 								Console.WriteLine("Downloading file " + (count + 1) + ": " + fileName + ".html");
+								//start downloading
 								client.DownloadFile(frontpageUrl.GetLeftPart(UriPartial.Authority) + raw,
 									Path.Combine(destinationFolder.AbsolutePath, fileName + ".html"));
 								++count;
@@ -79,13 +83,13 @@ namespace NovelDownloader
 							resource = webClient.DownloadString(frontpageUrl);
 						}
 						frontpage.LoadHtml(resource);
-							anchorNode = frontpage.QuerySelectorAll(".pagination li");
-							//IList<HtmlNode> tmp = frontpage.QuerySelectorAll(".pagination li");
-							//for (int i = 0; i < tmp.Count; ++i)
-							//	if (tmp[i].GetClassList().Contains("active"))
-							//		anchorNode = tmp[i + 1].QuerySelector("a");
-							links = frontpage.QuerySelectorAll(".list-chapter a");
+						//find link to next frontpage
+						anchorNode = frontpage.QuerySelectorAll(".pagination li");
+						//find links to chapters within current frontpage
+						links = frontpage.QuerySelectorAll(".list-chapter a");
+						//download chapters from links
 						Console.WriteLine("Downloading chapters from " + frontpageUrl + "..");
+							//download loop
 						using (WebClient client = new WebClient())
 							foreach (HtmlNode link in links)
 							{
@@ -96,6 +100,7 @@ namespace NovelDownloader
 								raw = raw.Substring(0, raw.Length - 1);
 								string fileName = raw.Split('/').Last();
 								Console.WriteLine("Downloading file " + (count + 1) + ": " + fileName + ".html");
+								//start downloading
 								client.DownloadFile(link.Attributes["href"].Value,
 									Path.Combine(destinationFolder.AbsolutePath, fileName + ".html"));
 								++count;
@@ -125,6 +130,7 @@ namespace NovelDownloader
 					} while (frontpageUrl != null);
 				}
 				else throw new Exception("Not supported website");
+				//download attempt success
 				Console.WriteLine("Download completed!");
 			}
 			catch(UnauthorizedAccessException err) { throw err; }
