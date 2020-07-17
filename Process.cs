@@ -40,7 +40,7 @@ namespace NovelDownloader
 						frontpage.LoadHtml(resource);
 							anchorNode = frontpage.QuerySelectorAll(".next");
 							links = frontpage.QuerySelectorAll(".list-chap a");
-						
+						Console.WriteLine("Downloading chapters from " + frontpageUrl + "..");
 						using (WebClient client = new WebClient())
 							foreach (HtmlNode link in links)
 							{
@@ -85,7 +85,7 @@ namespace NovelDownloader
 							//	if (tmp[i].GetClassList().Contains("active"))
 							//		anchorNode = tmp[i + 1].QuerySelector("a");
 							links = frontpage.QuerySelectorAll(".list-chapter a");
-						
+						Console.WriteLine("Downloading chapters from " + frontpageUrl + "..");
 						using (WebClient client = new WebClient())
 							foreach (HtmlNode link in links)
 							{
