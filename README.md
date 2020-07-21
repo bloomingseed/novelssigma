@@ -16,8 +16,7 @@ NovelsSigma.exe https://truyenfull.vn/yeu-than-ky/ https://sstruyen.com/yeu-than
 ## Upcoming Features
 - Use colors for better visualizing.
 - Provide support for other novel reading websites.
+- An alternative version with Graphical User Interface.
 ## System Requirements
 - Windows OS.
-- App built with .NET Framework 4.5, built for .NET Framework 4.6.1.
-## Latest Release
-Version 1.0.0.
+- See details in each *release description*.
