@@ -14,19 +14,19 @@ namespace NovelsSigma
 	{
 		public static void Process(string input)
 		{
-			Uri destinationFolder = null,
-				frontpageUrl = null;
+			string destinationFolder = null;
+			Uri frontpageUrl = null;
 			try
 			{
 				frontpageUrl = new Uri(input);
-				destinationFolder = new Uri(Environment.CurrentDirectory);
+				destinationFolder = Environment.CurrentDirectory;
 				HtmlDocument frontpage = new HtmlDocument();
 				string resource = null;
 				IList<HtmlNode> anchorNode = null;
 				IList<HtmlNode> links = null;
 				int count = 0;
 				string novelName = frontpageUrl.Segments[1];
-				destinationFolder = new Uri(Directory.CreateDirectory(destinationFolder.AbsolutePath + "/" + frontpageUrl.Host + "/" + novelName).FullName);
+				destinationFolder = Directory.CreateDirectory(destinationFolder + "\\" + frontpageUrl.Host + "\\" + novelName).FullName;
 				if (frontpageUrl.Host == "sstruyen.com")
 				{
 					do
@@ -55,7 +55,7 @@ namespace NovelsSigma
 								Console.WriteLine("\tDownloading file " + (count + 1) + ": " + fileName + ".html");
 								//start downloading
 								client.DownloadFile(frontpageUrl.GetLeftPart(UriPartial.Authority) + raw,
-									Path.Combine(destinationFolder.AbsolutePath, fileName + ".html"));
+									$"{destinationFolder}\\{fileName}.html");
 								++count;
 							}
 						if (anchorNode == null)
@@ -102,7 +102,7 @@ namespace NovelsSigma
 								Console.WriteLine("Downloading file " + (count + 1) + ": " + fileName + ".html");
 								//start downloading
 								client.DownloadFile(link.Attributes["href"].Value,
-									Path.Combine(destinationFolder.AbsolutePath, fileName + ".html"));
+									$"{destinationFolder}\\{fileName}.html");
 								++count;
 							}
 						if (anchorNode == null)
@@ -131,7 +131,7 @@ namespace NovelsSigma
 				}
 				else throw new Exception("Not supported website");
 				//download attempt success
-				Console.WriteLine("Download completed! Downloaded files are saved at: \n"+destinationFolder.AbsolutePath);
+				Console.WriteLine("Download completed! Downloaded files are saved at: \n"+destinationFolder);
 			}
 			catch(UnauthorizedAccessException err) { throw err; }
 			catch (Exception err) { throw err; }
