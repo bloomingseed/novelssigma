@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using NovelsSigma.Properties;
 
 namespace NovelsSigma
 {
@@ -20,6 +21,8 @@ namespace NovelsSigma
 			InitializeComponent();
 			this.Load += resetBttn_Click;
 			this.GotResult += GotResultHandler;
+
+			this.Icon = Resource.logo_icon;
 		}
 		
 		private void GotResultHandler(object sender, EventArgs args)
@@ -35,18 +38,30 @@ namespace NovelsSigma
 			saveFolderTextBox.Text = downloader.SaveLocation.AbsolutePath;
 		}
 
-		private void enterBttn_Click(object sender, EventArgs e)
+		private async void enterBttn_Click(object sender, EventArgs e)
 		{
 			try
 			{
 				Uri url = new Uri(urlTextBox.Text.Trim());
-				Task<Downloader> task = new TaskFactory<Downloader>().StartNew(() => new Downloader(Downloader.Process(url.AbsoluteUri)));
 				statusTextBox.Text = "Getting chapters list.. (This process may take time)";
-				while (task.IsCompleted)
-					progressBar1.PerformStep();
-				downloader = task.Result;
-				//downloader = new Downloader(Downloader.Process(url.AbsoluteUri));
-				GotResult.Invoke(this, new EventArgs());
+				//Task<Downloader> task = new TaskFactory<Downloader>().StartNew(() => new Downloader(Downloader.Process(url.AbsoluteUri)));
+
+				////while (task.IsCompleted)
+				////	progressBar1.PerformStep();
+				//await task;
+				//downloader = task.Result;
+				////downloader = new Downloader(Downloader.Process(url.AbsoluteUri));
+
+				//GotResult.Invoke(this, new EventArgs());
+				ProgressDialog dialog = new ProgressDialog("Getting chapters list..");
+				dialog.arg = url;
+				dialog.worker.DoWork += (pbsher, arg) =>
+				{
+					BackgroundWorker bgrWorker = pbsher as BackgroundWorker;
+					if (bgrWorker.CancellationPending)
+						throw new Exception("Process canceled.");
+					arg.Result = new Downloader(Downloader.Process((arg.Argument as Uri).AbsoluteUri), null);
+				};
 			}
 			catch(Exception err) { MessageBox.Show(this, err.Message, "Process URL Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 		}
@@ -139,7 +154,7 @@ namespace NovelsSigma
 
 				await Task.Run(() => downloader.Download(indices));
 				
-				MessageBox.Show(this, downloader.Resource.Chapters.Count + " files downloaded to " + downloader.SaveLocation.AbsolutePath + ".", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show(this, indices.Length + " files downloaded to " + downloader.SaveLocation.AbsolutePath + ".", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				statusTextBox.Text = "Ready";
 			}
 			catch (Exception err) { MessageBox.Show(err.Message + "\r\nPlease visit development site for help.", "Download Chapters Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }

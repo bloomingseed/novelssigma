@@ -42,14 +42,13 @@
 			this.downloadBttn = new System.Windows.Forms.Button();
 			this.resetBttn = new System.Windows.Forms.Button();
 			this.resetSaveLocationBttn = new System.Windows.Forms.Button();
-			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.SuspendLayout();
 			// 
 			// statusTextBox
 			// 
 			this.statusTextBox.Cursor = System.Windows.Forms.Cursors.Default;
 			this.statusTextBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.statusTextBox.Location = new System.Drawing.Point(0, 549);
+			this.statusTextBox.Location = new System.Drawing.Point(0, 525);
 			this.statusTextBox.Multiline = true;
 			this.statusTextBox.Name = "statusTextBox";
 			this.statusTextBox.ReadOnly = true;
@@ -182,21 +181,11 @@
 			this.resetSaveLocationBttn.UseVisualStyleBackColor = true;
 			this.resetSaveLocationBttn.Click += new System.EventHandler(this.resetSaveLocationBttn_Click);
 			// 
-			// progressBar1
-			// 
-			this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.progressBar1.Location = new System.Drawing.Point(0, 526);
-			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(496, 23);
-			this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-			this.progressBar1.TabIndex = 16;
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(496, 569);
-			this.Controls.Add(this.progressBar1);
+			this.ClientSize = new System.Drawing.Size(496, 545);
 			this.Controls.Add(this.resetSaveLocationBttn);
 			this.Controls.Add(this.resetBttn);
 			this.Controls.Add(this.downloadBttn);
@@ -237,6 +226,5 @@
 		private System.Windows.Forms.Button downloadBttn;
 		private System.Windows.Forms.Button resetBttn;
 		private System.Windows.Forms.Button resetSaveLocationBttn;
-		private System.Windows.Forms.ProgressBar progressBar1;
 	}
 }
