@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.statusTextBox = new System.Windows.Forms.TextBox();
 			this.chaptersListBox = new System.Windows.Forms.CheckedListBox();
 			this.enterBttn = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
@@ -43,20 +42,6 @@
 			this.resetBttn = new System.Windows.Forms.Button();
 			this.resetSaveLocationBttn = new System.Windows.Forms.Button();
 			this.SuspendLayout();
-			// 
-			// statusTextBox
-			// 
-			this.statusTextBox.Cursor = System.Windows.Forms.Cursors.Default;
-			this.statusTextBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.statusTextBox.Location = new System.Drawing.Point(0, 525);
-			this.statusTextBox.Multiline = true;
-			this.statusTextBox.Name = "statusTextBox";
-			this.statusTextBox.ReadOnly = true;
-			this.statusTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.statusTextBox.Size = new System.Drawing.Size(496, 20);
-			this.statusTextBox.TabIndex = 0;
-			this.statusTextBox.TabStop = false;
-			this.statusTextBox.Text = "Ready";
 			// 
 			// chaptersListBox
 			// 
@@ -185,7 +170,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(496, 545);
+			this.ClientSize = new System.Drawing.Size(496, 526);
 			this.Controls.Add(this.resetSaveLocationBttn);
 			this.Controls.Add(this.resetBttn);
 			this.Controls.Add(this.downloadBttn);
@@ -199,7 +184,6 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.enterBttn);
 			this.Controls.Add(this.chaptersListBox);
-			this.Controls.Add(this.statusTextBox);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "MainForm";
@@ -211,8 +195,6 @@
 		}
 
 		#endregion
-
-		private System.Windows.Forms.TextBox statusTextBox;
 		private System.Windows.Forms.CheckedListBox chaptersListBox;
 		private System.Windows.Forms.Button enterBttn;
 		private System.Windows.Forms.Label label1;

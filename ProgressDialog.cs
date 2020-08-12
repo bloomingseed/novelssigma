@@ -13,41 +13,62 @@ namespace NovelsSigma
 {
 	public partial class ProgressDialog : Form
 	{
-		private bool isDialog;
 		public BackgroundWorker worker;
-		public object arg;
-		public ProgressDialog(string caption)
+		//public Downloader.ProcessResult Result;
+		private object workerArg;
+		public ProgressDialog(string title)
 		{
 			InitializeComponent();
+
 			this.Icon = Resource.process_icon;
-			captionLabel.Text = caption;
+			this.Text = title;
+
+			worker = new BackgroundWorker();
+			worker.WorkerReportsProgress = worker.WorkerSupportsCancellation = true;
+			worker.ProgressChanged += (sender, e) =>
+			{
+				if(e.UserState != null)
+					captionLabel.Text = e.UserState.ToString();
+				progressBar1.Value = e.ProgressPercentage;
+			};
+			worker.RunWorkerCompleted += (sender, e) =>
+			{
+				if (e.Error != null)
+				{
+					MessageBox.Show(e.Error.Message, title + " Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+				if (e.Cancelled)
+				{
+					MessageBox.Show("Result discarded.", title + " Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				//else
+				//{
+				//	Downloader.ProcessResult res = e.Result as Downloader.ProcessResult;
+				//	MessageBox.Show($"Fetched {res.Chapters} chapters of \"{res.NovelName}\".", title + " Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				//}
+				this.Close();
+			};
 		}
-		public new void Show()
+		//public void Show(Downloader downloader)
+		public void Show(Downloader downloader)
 		{
-			isDialog = false;
+			workerArg = downloader;
 			base.Show();
 		}
-		public new DialogResult ShowDialog(IWin32Window owner)
+		public DialogResult ShowDialog(IWin32Window owner, string url)
 		{
-			isDialog = true;
+			workerArg = url;
 			return base.ShowDialog(owner);
 		}
 
 		private void ProgressDialog_Load(object sender, EventArgs e)
 		{
-			if (isDialog)
-			{
-				this.ShowInTaskbar = this.ShowIcon = false;
-			}
-			else
-			{
-				this.ShowInTaskbar = this.ShowIcon = false;
-			}
+			worker.RunWorkerAsync(workerArg);
 		}
 
 		private void cancelBttn_Click(object sender, EventArgs e)
 		{
-			worker.RunWorkerAsync(arg);
+				worker.CancelAsync();
 		}
 	}
 }

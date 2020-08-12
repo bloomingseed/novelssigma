@@ -15,17 +15,15 @@ namespace NovelsSigma
 	public partial class MainForm : Form
 	{
 		private Downloader downloader;
-		private event EventHandler GotResult;
 		public MainForm()
 		{
 			InitializeComponent();
 			this.Load += resetBttn_Click;
-			this.GotResult += GotResultHandler;
 
 			this.Icon = Resource.logo_icon;
 		}
 		
-		private void GotResultHandler(object sender, EventArgs args)
+		private void GotResultHandler()
 		{
 			BindCheckedListBox();
 			//
@@ -35,35 +33,37 @@ namespace NovelsSigma
 
 			checkAllBttn.Enabled = uncheckAllBttn.Enabled = renameChapterBttn.Enabled
 			= downloadBttn.Enabled = resetBttn.Enabled = chaptersListBox.Enabled = saveFolderTextBox.Enabled = selectFolderBttn.Enabled = true;
-			saveFolderTextBox.Text = downloader.SaveLocation.AbsolutePath;
+			saveFolderTextBox.Text = downloader.SaveLocation.OriginalString;
 		}
 
-		private async void enterBttn_Click(object sender, EventArgs e)
+		private void enterBttn_Click(object sender, EventArgs e)
 		{
+			Uri url = null;
+			string dialogTitle = "Fetch chapter lists";
 			try
 			{
-				Uri url = new Uri(urlTextBox.Text.Trim());
-				statusTextBox.Text = "Getting chapters list.. (This process may take time)";
-				//Task<Downloader> task = new TaskFactory<Downloader>().StartNew(() => new Downloader(Downloader.Process(url.AbsoluteUri)));
-
-				////while (task.IsCompleted)
-				////	progressBar1.PerformStep();
-				//await task;
-				//downloader = task.Result;
-				////downloader = new Downloader(Downloader.Process(url.AbsoluteUri));
-
-				//GotResult.Invoke(this, new EventArgs());
-				ProgressDialog dialog = new ProgressDialog("Getting chapters list..");
-				dialog.arg = url;
-				dialog.worker.DoWork += (pbsher, arg) =>
-				{
-					BackgroundWorker bgrWorker = pbsher as BackgroundWorker;
-					if (bgrWorker.CancellationPending)
-						throw new Exception("Process canceled.");
-					arg.Result = new Downloader(Downloader.Process((arg.Argument as Uri).AbsoluteUri), null);
-				};
+				url = new Uri(urlTextBox.Text.Trim());
 			}
-			catch(Exception err) { MessageBox.Show(this, err.Message, "Process URL Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+			catch (Exception err) { MessageBox.Show(this, err.Message+"\r\nPlease revise selected save path.", "Save Location Invalid", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
+			ProgressDialog dialog = new ProgressDialog(dialogTitle);
+			dialog.worker.DoWork += (pbsher, arg) =>
+			{
+				BackgroundWorker bgrWorker = pbsher as BackgroundWorker;
+				arg.Result = new Downloader(Downloader.Process(Downloader.PreProcess((string)arg.Argument, bgrWorker, arg), bgrWorker, arg));
+			};
+			dialog.worker.RunWorkerCompleted += (pbsher, arg) =>
+			{
+				if (arg.Error != null)
+					MessageBox.Show(this, arg.Error.Message, "Fetch chapter list error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				else if (!arg.Cancelled)
+				{
+					downloader = arg.Result as Downloader;
+					MessageBox.Show($"Fetched {downloader.Resource.Chapters.Count} chapters of \"{downloader.Resource.NovelName}\".", dialogTitle + " Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					GotResultHandler();
+				}
+			};
+			dialog.ShowDialog(this, url.AbsoluteUri);
 		}
 		
 		private void BindCheckedListBox()
@@ -119,52 +119,49 @@ namespace NovelsSigma
 			if (browserDialog.ShowDialog(this) == DialogResult.OK)
 			{
 				downloader.SaveLocation = new Uri(browserDialog.SelectedPath);
-				saveFolderTextBox.Text = downloader.SaveLocation.AbsolutePath;
+				saveFolderTextBox.Text = downloader.SaveLocation.OriginalString;
 			}
 		}
 
 		private void resetSaveLocationBttn_Click(object sender, EventArgs e)
 		{
 			downloader.ResetSaveLocation();
-			saveFolderTextBox.Text = downloader.SaveLocation.AbsolutePath;
+			saveFolderTextBox.Text = downloader.SaveLocation.OriginalString;
 		}
 
-		private async void downloadBttn_Click(object sender, EventArgs e)
+		private void downloadBttn_Click(object sender, EventArgs e)
 		{
 			try
 			{
 				string customUri = saveFolderTextBox.Text.Trim();
-				int[] indices = null;
+				downloader.checkedIndices = new int[chaptersListBox.CheckedIndices.Count];
+				foreach (int i in chaptersListBox.CheckedIndices)
+					downloader.checkedIndices[i] = i;
 				downloader.SaveLocation = new Uri(customUri);
 
-				if (!Directory.Exists(downloader.SaveLocation.AbsolutePath))
-					if (MessageBox.Show(this, "The path \"" + downloader.SaveLocation.AbsolutePath + "\"doesn't exist.\r\nDo you want to create this path?", "Path doesn't exist", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+				if (!Directory.Exists(downloader.SaveLocation.OriginalString)
+					&& MessageBox.Show(this, "The path \"" + downloader.SaveLocation.OriginalString + "\"doesn't exist.\r\nDo you want to create this path?", "Path doesn't exist", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
 						throw new Exception("Please reselect save path.");
 
-				if (chaptersListBox.CheckedIndices.Count > 0)
-				{
-					indices = new int[chaptersListBox.CheckedIndices.Count];
-					for (int i = 0; i < chaptersListBox.CheckedIndices.Count; ++i)
-						indices[i] = chaptersListBox.CheckedIndices[i];
-				}
-				else
-					throw new Exception("Please select (check) at least 1 chapter to download.");
+				Downloader _downloader = new Downloader(downloader);
+				ProgressDialog dialog = new ProgressDialog("Download chapters");
+				dialog.worker.DoWork += (pbsher, arg) =>
+				 {
+					 Downloader passedDownloader = arg.Argument as Downloader;
+					 passedDownloader.Download(pbsher as BackgroundWorker, arg);
+				 };
+				dialog.worker.RunWorkerCompleted += (pbsher, arg) =>
+				 {
+					 if (arg.Error != null)
+					 {
+						 throw arg.Error;
+					 }
+					 MessageBox.Show(this, _downloader.checkedIndices.Length + " files downloaded to " + downloader.SaveLocation.OriginalString + ".", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				 };
 
-				downloader.Downloading += Downloader_Downloading;
-
-				await Task.Run(() => downloader.Download(indices));
-				
-				MessageBox.Show(this, indices.Length + " files downloaded to " + downloader.SaveLocation.AbsolutePath + ".", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				statusTextBox.Text = "Ready";
+				dialog.Show(_downloader);
 			}
 			catch (Exception err) { MessageBox.Show(err.Message + "\r\nPlease visit development site for help.", "Download Chapters Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-		}
-
-		//private delegate void SetStatusTextDelegate(string text);
-		private void Downloader_Downloading(object sender, Downloader.DownloadingEventArgs e)
-		{
-			Action<string> action = new Action<string>((txt) => { statusTextBox.Text = $"Downloading {txt}.."; });
-			statusTextBox.Invoke(action, new object[] { e.Target.Key });
 		}
 
 

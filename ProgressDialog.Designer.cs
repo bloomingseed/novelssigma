@@ -39,14 +39,14 @@
 			this.captionLabel.Location = new System.Drawing.Point(13, 9);
 			this.captionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.captionLabel.Name = "captionLabel";
-			this.captionLabel.Size = new System.Drawing.Size(117, 17);
+			this.captionLabel.Size = new System.Drawing.Size(92, 17);
 			this.captionLabel.TabIndex = 0;
-			this.captionLabel.Text = "Progress Caption";
+			this.captionLabel.Text = "Progressing..";
 			// 
 			// cancelBttn
 			// 
 			this.cancelBttn.Location = new System.Drawing.Point(201, 66);
-			this.cancelBttn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.cancelBttn.Margin = new System.Windows.Forms.Padding(4);
 			this.cancelBttn.Name = "cancelBttn";
 			this.cancelBttn.Size = new System.Drawing.Size(100, 28);
 			this.cancelBttn.TabIndex = 1;
@@ -58,7 +58,7 @@
 			// 
 			this.progressBar1.BackColor = System.Drawing.SystemColors.ButtonFace;
 			this.progressBar1.Location = new System.Drawing.Point(16, 30);
-			this.progressBar1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.progressBar1.Margin = new System.Windows.Forms.Padding(4);
 			this.progressBar1.Name = "progressBar1";
 			this.progressBar1.Size = new System.Drawing.Size(285, 28);
 			this.progressBar1.TabIndex = 2;
@@ -72,8 +72,10 @@
 			this.Controls.Add(this.cancelBttn);
 			this.Controls.Add(this.captionLabel);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "ProgressDialog";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Progress";
 			this.Load += new System.EventHandler(this.ProgressDialog_Load);
 			this.ResumeLayout(false);
