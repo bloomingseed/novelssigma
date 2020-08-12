@@ -50,6 +50,7 @@
 			this.cancelBttn.Name = "cancelBttn";
 			this.cancelBttn.Size = new System.Drawing.Size(100, 28);
 			this.cancelBttn.TabIndex = 1;
+			this.cancelBttn.TabStop = false;
 			this.cancelBttn.Text = "Cancel";
 			this.cancelBttn.UseVisualStyleBackColor = true;
 			this.cancelBttn.Click += new System.EventHandler(this.cancelBttn_Click);

@@ -50,14 +50,14 @@
 			this.chaptersListBox.Location = new System.Drawing.Point(12, 52);
 			this.chaptersListBox.Name = "chaptersListBox";
 			this.chaptersListBox.Size = new System.Drawing.Size(378, 328);
-			this.chaptersListBox.TabIndex = 1;
+			this.chaptersListBox.TabIndex = 5;
 			// 
 			// enterBttn
 			// 
 			this.enterBttn.Location = new System.Drawing.Point(396, 9);
 			this.enterBttn.Name = "enterBttn";
 			this.enterBttn.Size = new System.Drawing.Size(93, 23);
-			this.enterBttn.TabIndex = 2;
+			this.enterBttn.TabIndex = 1;
 			this.enterBttn.Text = "Enter";
 			this.enterBttn.UseVisualStyleBackColor = true;
 			this.enterBttn.Click += new System.EventHandler(this.enterBttn_Click);
@@ -68,7 +68,7 @@
 			this.label1.Location = new System.Drawing.Point(12, 12);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(40, 17);
-			this.label1.TabIndex = 3;
+			this.label1.TabIndex = 11;
 			this.label1.Text = "URL:";
 			// 
 			// urlTextBox
@@ -77,14 +77,14 @@
 			this.urlTextBox.Name = "urlTextBox";
 			this.urlTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
 			this.urlTextBox.Size = new System.Drawing.Size(332, 23);
-			this.urlTextBox.TabIndex = 4;
+			this.urlTextBox.TabIndex = 0;
 			// 
 			// checkAllBttn
 			// 
 			this.checkAllBttn.Location = new System.Drawing.Point(396, 55);
 			this.checkAllBttn.Name = "checkAllBttn";
 			this.checkAllBttn.Size = new System.Drawing.Size(93, 23);
-			this.checkAllBttn.TabIndex = 5;
+			this.checkAllBttn.TabIndex = 2;
 			this.checkAllBttn.Text = "Check All";
 			this.checkAllBttn.UseVisualStyleBackColor = true;
 			this.checkAllBttn.Click += new System.EventHandler(this.checkAllBttn_Click);
@@ -94,7 +94,7 @@
 			this.uncheckAllBttn.Location = new System.Drawing.Point(396, 84);
 			this.uncheckAllBttn.Name = "uncheckAllBttn";
 			this.uncheckAllBttn.Size = new System.Drawing.Size(93, 23);
-			this.uncheckAllBttn.TabIndex = 6;
+			this.uncheckAllBttn.TabIndex = 3;
 			this.uncheckAllBttn.Text = "Uncheck All";
 			this.uncheckAllBttn.UseVisualStyleBackColor = true;
 			this.uncheckAllBttn.Click += new System.EventHandler(this.uncheckAllBttn_Click);
@@ -104,18 +104,18 @@
 			this.renameChapterBttn.Location = new System.Drawing.Point(396, 113);
 			this.renameChapterBttn.Name = "renameChapterBttn";
 			this.renameChapterBttn.Size = new System.Drawing.Size(93, 23);
-			this.renameChapterBttn.TabIndex = 9;
+			this.renameChapterBttn.TabIndex = 4;
 			this.renameChapterBttn.Text = "Rename...";
 			this.renameChapterBttn.UseVisualStyleBackColor = true;
 			this.renameChapterBttn.Click += new System.EventHandler(this.renameChapterBttn_Click);
 			// 
 			// saveFolderTextBox
 			// 
-			this.saveFolderTextBox.Location = new System.Drawing.Point(83, 398);
+			this.saveFolderTextBox.Location = new System.Drawing.Point(73, 398);
 			this.saveFolderTextBox.Name = "saveFolderTextBox";
 			this.saveFolderTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
-			this.saveFolderTextBox.Size = new System.Drawing.Size(307, 23);
-			this.saveFolderTextBox.TabIndex = 12;
+			this.saveFolderTextBox.Size = new System.Drawing.Size(317, 23);
+			this.saveFolderTextBox.TabIndex = 6;
 			// 
 			// label2
 			// 
@@ -123,7 +123,7 @@
 			this.label2.Location = new System.Drawing.Point(12, 401);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(65, 17);
-			this.label2.TabIndex = 11;
+			this.label2.TabIndex = 12;
 			this.label2.Text = "Save To:";
 			// 
 			// selectFolderBttn
@@ -131,27 +131,27 @@
 			this.selectFolderBttn.Location = new System.Drawing.Point(396, 398);
 			this.selectFolderBttn.Name = "selectFolderBttn";
 			this.selectFolderBttn.Size = new System.Drawing.Size(93, 23);
-			this.selectFolderBttn.TabIndex = 10;
+			this.selectFolderBttn.TabIndex = 7;
 			this.selectFolderBttn.Text = "Select...";
 			this.selectFolderBttn.UseVisualStyleBackColor = true;
 			this.selectFolderBttn.Click += new System.EventHandler(this.selectFolderBttn_Click);
 			// 
 			// downloadBttn
 			// 
-			this.downloadBttn.Location = new System.Drawing.Point(357, 470);
+			this.downloadBttn.Location = new System.Drawing.Point(396, 456);
 			this.downloadBttn.Name = "downloadBttn";
-			this.downloadBttn.Size = new System.Drawing.Size(132, 48);
-			this.downloadBttn.TabIndex = 13;
-			this.downloadBttn.Text = "Download Selected Chapters";
+			this.downloadBttn.Size = new System.Drawing.Size(93, 23);
+			this.downloadBttn.TabIndex = 9;
+			this.downloadBttn.Text = "Download!";
 			this.downloadBttn.UseVisualStyleBackColor = true;
 			this.downloadBttn.Click += new System.EventHandler(this.downloadBttn_Click);
 			// 
 			// resetBttn
 			// 
-			this.resetBttn.Location = new System.Drawing.Point(396, 142);
+			this.resetBttn.Location = new System.Drawing.Point(297, 456);
 			this.resetBttn.Name = "resetBttn";
 			this.resetBttn.Size = new System.Drawing.Size(93, 23);
-			this.resetBttn.TabIndex = 14;
+			this.resetBttn.TabIndex = 10;
 			this.resetBttn.Text = "Reset All";
 			this.resetBttn.UseVisualStyleBackColor = true;
 			this.resetBttn.Click += new System.EventHandler(this.resetBttn_Click);
@@ -161,7 +161,7 @@
 			this.resetSaveLocationBttn.Location = new System.Drawing.Point(396, 427);
 			this.resetSaveLocationBttn.Name = "resetSaveLocationBttn";
 			this.resetSaveLocationBttn.Size = new System.Drawing.Size(93, 23);
-			this.resetSaveLocationBttn.TabIndex = 15;
+			this.resetSaveLocationBttn.TabIndex = 8;
 			this.resetSaveLocationBttn.Text = "Reset Path";
 			this.resetSaveLocationBttn.UseVisualStyleBackColor = true;
 			this.resetSaveLocationBttn.Click += new System.EventHandler(this.resetSaveLocationBttn_Click);
@@ -170,7 +170,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(496, 526);
+			this.ClientSize = new System.Drawing.Size(496, 490);
 			this.Controls.Add(this.resetSaveLocationBttn);
 			this.Controls.Add(this.resetBttn);
 			this.Controls.Add(this.downloadBttn);
