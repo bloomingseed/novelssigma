@@ -32,19 +32,19 @@ namespace NovelsSigma
 				chaptersListBox.SetItemChecked(i, true);
 
 			checkAllBttn.Enabled = uncheckAllBttn.Enabled = renameChapterBttn.Enabled
-			= downloadBttn.Enabled = resetBttn.Enabled = chaptersListBox.Enabled = saveFolderTextBox.Enabled = selectFolderBttn.Enabled = true;
+			= downloadBttn.Enabled = resetBttn.Enabled = chaptersListBox.Enabled = saveFolderTextBox.Enabled = selectFolderBttn.Enabled = resetSaveLocationBttn.Enabled = true;
 			saveFolderTextBox.Text = downloader.SaveLocation.OriginalString;
 		}
 
 		private void enterBttn_Click(object sender, EventArgs e)
 		{
-			Uri url = null;
-			string dialogTitle = "Fetch chapter lists";
+				Uri url = null;
+				string dialogTitle = "Fetch chapter lists";
 			try
 			{
 				url = new Uri(urlTextBox.Text.Trim());
 			}
-			catch (Exception err) { MessageBox.Show(this, err.Message+"\r\nPlease revise selected save path.", "Save Location Invalid", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+			catch(Exception err) { MessageBox.Show(this, err.Message + "\r\nPlease try a different URL", "Fetch Chapter Lists Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
 			ProgressDialog dialog = new ProgressDialog(dialogTitle);
 			dialog.worker.DoWork += (pbsher, arg) =>
@@ -55,7 +55,7 @@ namespace NovelsSigma
 			dialog.worker.RunWorkerCompleted += (pbsher, arg) =>
 			{
 				if (arg.Error != null)
-					MessageBox.Show(this, arg.Error.Message, "Fetch chapter list error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(this, arg.Error.Message, "Fetch Chapter Lists Erorr", MessageBoxButtons.OK, MessageBoxIcon.Error); 
 				else if (!arg.Cancelled)
 				{
 					downloader = arg.Result as Downloader;
@@ -64,6 +64,7 @@ namespace NovelsSigma
 				}
 			};
 			dialog.ShowDialog(this, url.AbsoluteUri);
+			
 		}
 		
 		private void BindCheckedListBox()
@@ -105,7 +106,8 @@ namespace NovelsSigma
 		{
 			chaptersListBox.Items.Clear();
 			checkAllBttn.Enabled = uncheckAllBttn.Enabled = renameChapterBttn.Enabled
-			= downloadBttn.Enabled = resetBttn.Enabled = chaptersListBox.Enabled = saveFolderTextBox.Enabled = selectFolderBttn.Enabled = false;
+			= downloadBttn.Enabled = resetBttn.Enabled = chaptersListBox.Enabled 
+			= saveFolderTextBox.Enabled = selectFolderBttn.Enabled = resetSaveLocationBttn.Enabled = false;
 			saveFolderTextBox.Text = "";
 			downloader = null;
 		}
@@ -141,7 +143,7 @@ namespace NovelsSigma
 
 				if (!Directory.Exists(downloader.SaveLocation.OriginalString)
 					&& MessageBox.Show(this, "The path \"" + downloader.SaveLocation.OriginalString + "\"doesn't exist.\r\nDo you want to create this path?", "Path doesn't exist", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-						throw new Exception("Please reselect save path.");
+					throw new Exception("Please reselect save path.");
 
 				Downloader _downloader = new Downloader(downloader);
 				ProgressDialog dialog = new ProgressDialog("Download chapters");
@@ -149,19 +151,26 @@ namespace NovelsSigma
 				 {
 					 Downloader passedDownloader = arg.Argument as Downloader;
 					 passedDownloader.Download(pbsher as BackgroundWorker, arg);
+					 // quick solution; improvable
+					 arg.Result = passedDownloader;
 				 };
 				dialog.worker.RunWorkerCompleted += (pbsher, arg) =>
 				 {
 					 if (arg.Error != null)
+						 MessageBox.Show(arg.Error.Message + "Please remove the downloaded files manually at\r\n" + _downloader.SaveLocation.OriginalString, "Download Chapters Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					 else if (arg.Cancelled)
+						 MessageBox.Show(this, "Download cancelled. Please remove the downloaded files manually at\r\n" + _downloader.SaveLocation.OriginalString, "Download Chapters Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					 else
 					 {
-						 throw arg.Error;
+						 Downloader passedDownloader = arg.Result as Downloader;
+						 MessageBox.Show(this, passedDownloader.checkedIndices.Length + " files downloaded to " + passedDownloader.SaveLocation.OriginalString + ".", "Download Chapters Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
 					 }
-					 MessageBox.Show(this, _downloader.checkedIndices.Length + " files downloaded to " + downloader.SaveLocation.OriginalString + ".", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
 				 };
 
 				dialog.Show(_downloader);
 			}
-			catch (Exception err) { MessageBox.Show(err.Message + "\r\nPlease visit development site for help.", "Download Chapters Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+			catch (Exception err) { MessageBox.Show(err.Message, "Download Chapters Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 		}
 
 

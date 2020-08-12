@@ -35,7 +35,7 @@ namespace NovelsSigma
 				checkedIndices = null;
 			else if(otherDownloader.checkedIndices.Length == 0)
 				throw new ArgumentException("Please select (check) at least 1 chapter to download.");
-			else if (otherDownloader.checkedIndices.Length > 0 && otherDownloader.checkedIndices.Length < otherDownloader.Resource.Chapters.Count)
+			else if (otherDownloader.checkedIndices.Length > 0)
 			{
 				checkedIndices = new int[otherDownloader.checkedIndices.Length];
 				for (int i = 0; i < otherDownloader.checkedIndices.Length; ++i)
@@ -170,6 +170,7 @@ namespace NovelsSigma
 					e.Cancel = true;
 					return null;
 				}
+
 				worker.ReportProgress((int)progressPercent,"Downloading the index page..");
 				using (WebClient webClient = new WebClient())
 				{
@@ -186,6 +187,7 @@ namespace NovelsSigma
 					e.Cancel = true;
 					return null;
 				}
+
 				worker.ReportProgress((int)progressPercent, "Loading index page..");
 				frontpage.LoadHtml(resource);
 				worker.ReportProgress((int)(progressPercent += avrPercent), null);
@@ -198,19 +200,16 @@ namespace NovelsSigma
 					e.Cancel = true;
 					return null;
 				}
+
 				if (frontpageUrl.Host == "sstruyen.com")
 				{
 					worker.ReportProgress((int)progressPercent, "Fetching index pages from sstruyen.com..");
 					string lastPageLink = frontpage.QuerySelector(".nexts").FirstChild.Attributes["href"].Value;
 					int start = lastPageLink.IndexOf("trang-");
 					pageLinks.Add(frontpageUrl.AbsoluteUri);
-
 					if (start != -1)
 					{
-						//int lastPage = int.Parse(lastPageLink.Substring(start + 6, lastPageLink.LastIndexOf('/')));
 						int lastPage = int.Parse(Substring(lastPageLink,start + 6, lastPageLink.IndexOf('/',start+6)));
-
-
 						for (int i = 2; i <= lastPage; ++i)
 						{
 							if (worker.CancellationPending)
@@ -222,7 +221,6 @@ namespace NovelsSigma
 							//
 							// 3.1 add found page to list
 							pageLinks.Add(frontpageUrl.GetLeftPart(UriPartial.Authority) + link);
-							
 						}
 					}
 				}
@@ -232,12 +230,18 @@ namespace NovelsSigma
 					var listItems = frontpage.QuerySelectorAll(".pagination li");
 					pageLinks.Add(frontpageUrl.AbsoluteUri);
 					if (listItems.Count == 0) ;
-					else if (listItems.Last().GetClassList().Contains("dropup") || listItems.Last().GetClassList().Contains("page-nav"))
+					else
 					{
-						string lastPageLink = listItems.Last().FirstChild.Attributes["href"].Value;
-						int start = lastPageLink.IndexOf("trang-");
-						//int lastPage = int.Parse(lastPageLink.Substring(start + 6, lastPageLink.IndexOf('/', start + 6)));
-						int lastPage = int.Parse(Substring(lastPageLink, start + 6, lastPageLink.IndexOf('/', start + 6)));
+						HtmlNode lastListItem = listItems.Last();
+						string lastPageLink = null;
+						int lastPage, start;
+
+						if (lastListItem.QuerySelector(".arrow") != null)
+							lastPageLink = lastListItem.FirstChild.Attributes["href"].Value;
+						else 
+							lastPageLink = listItems[listItems.Count-2].FirstChild.Attributes["href"].Value;
+						start = lastPageLink.IndexOf("trang-");
+						lastPage = int.Parse(Substring(lastPageLink, start + 6, lastPageLink.IndexOf('/', start + 6)));
 
 						for (int i = 2; i <= lastPage; ++i)
 						{
@@ -252,22 +256,9 @@ namespace NovelsSigma
 							pageLinks.Add(link);
 						}
 					}
-					else
-					{
-
-						for (int i = 0; i < listItems.Count; ++i)
-						{
-							if (worker.CancellationPending)
-							{
-								e.Cancel = true;
-								return null;
-							}
-							pageLinks.Add(listItems[i].FirstChild.Attributes["href"].Value);
-						}
-					}
 
 				}
-				worker.ReportProgress((int)(progressPercent += avrPercent), "Fetching index pages done.");
+				worker.ReportProgress(50, "Fetching index pages done.");
 				return pageLinks.ToArray();
 				}
 			catch (Exception err) { throw err; }
@@ -276,8 +267,6 @@ namespace NovelsSigma
 		{
 			try
 			{
-				//if (preprocess == null || preprocess.Length == 0)
-				//	throw new Exception("Preprocess value is invalid");
 				if (preprocess == null)
 				{
 					e.Cancel = true;
@@ -293,39 +282,53 @@ namespace NovelsSigma
 				IList<HtmlNode> links = null;
 				string resource = null;
 				HtmlDocument frontpage = new HtmlDocument();
+				double avrPercent = (double)50 / preprocess.Length, progressPercent = 50;
 
 				if (frontpageUrl.Host == "sstruyen.com")
 				{
 					for(int i = 0; i<preprocess.Length;++i)
 					{
 						//
-						// download the chapters index page
+						// i.1 Download the chapters index page
 						if (worker.CancellationPending)
 						{
 							e.Cancel = true;
 							return null;
 						}
-						worker.ReportProgress(50, "Fetching index page from "+preprocess[i]+"..");
+						worker.ReportProgress((int)progressPercent, "Fetching index page from " + GetRelativeUrl(preprocess[i]) + "..");
 						using (WebClient webClient = new WebClient())
 						{
 							webClient.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
 							resource = webClient.DownloadString(preprocess[i]);
 						}
+						worker.ReportProgress((int)(progressPercent), null);
 						//
-						// load it to frontpage
-						frontpage.LoadHtml(resource);
-						//
-						// find links
-						links = frontpage.QuerySelectorAll(".list-chap a");
-						worker.ReportProgress(50, "Fetching chapters..");
-						foreach (HtmlNode link in links)
+						// i.2 load it to frontpage
+						if (worker.CancellationPending)
 						{
-							
-							chapterLinks.Add(frontpageUrl.GetLeftPart(UriPartial.Authority) + link.Attributes["href"].Value);
+							e.Cancel = true;
+							return null;
 						}
 
-						if (i == preprocess.Length / 2)
-							worker.ReportProgress(75, null);
+						worker.ReportProgress((int)progressPercent, "Loading the index page..");
+						frontpage.LoadHtml(resource);
+						worker.ReportProgress((int)(progressPercent), null);
+						//
+						// i.3 find links
+						if (worker.CancellationPending)
+						{
+							e.Cancel = true;
+							return null;
+						}
+
+						worker.ReportProgress((int)progressPercent, "Finding chapters..");
+						links = frontpage.QuerySelectorAll(".list-chap a");
+						foreach (HtmlNode link in links)
+							chapterLinks.Add(frontpageUrl.GetLeftPart(UriPartial.Authority) + link.Attributes["href"].Value);
+
+						//if (i == preprocess.Length / 2)
+						//	worker.ReportProgress(75, null);
+						worker.ReportProgress((int)(progressPercent += avrPercent), null);
 					}
 					
 				}
@@ -334,35 +337,51 @@ namespace NovelsSigma
 					for (int i = 0; i < preprocess.Length; ++i)
 					{
 						//
-						// download the chapters index page
+						// i.1 Download the chapters index page
 						if (worker.CancellationPending)
 						{
 							e.Cancel = true;
 							return null;
 						}
-						worker.ReportProgress(50, "Fetching index page from " + preprocess[i] + "..");
+						worker.ReportProgress((int)progressPercent, "Fetching index page from " + GetRelativeUrl(preprocess[i]) + "..");
 						using (WebClient webClient = new WebClient())
 						{
 							webClient.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2";
 							resource = webClient.DownloadString(preprocess[i]);
 						}
+						worker.ReportProgress((int)(progressPercent), null);
 						//
-						// load it to frontpage
+						// i.2 load it to frontpage
+						if (worker.CancellationPending)
+						{
+							e.Cancel = true;
+							return null;
+						}
+
+						worker.ReportProgress((int)progressPercent, "Loading the index page..");
 						frontpage.LoadHtml(resource);
+						worker.ReportProgress((int)progressPercent, null);
 						//
 						// find links
+						if (worker.CancellationPending)
+						{
+							e.Cancel = true;
+							return null;
+						}
+
+						worker.ReportProgress((int)progressPercent, "Finding chapters..");
 						links = frontpage.QuerySelectorAll(".list-chapter a");
-						worker.ReportProgress(50, "Fetching chapters..");
 						foreach (HtmlNode link in links)
 						{
 							chapterLinks.Add(link.Attributes["href"].Value);
 						}
 
-						if (i == preprocess.Length / 2)
-							worker.ReportProgress(75, null);
+						//if (i == preprocess.Length / 2)
+						//	worker.ReportProgress(75, null);
+						worker.ReportProgress((int)(progressPercent += avrPercent), null);
 					}
 				}
-				worker.ReportProgress(100, null);
+				worker.ReportProgress(100, "Generating final result..");
 
 				return new ProcessResult(siteName, novelName, chapterLinks.ToArray(), preprocess);
 			}
@@ -374,6 +393,12 @@ namespace NovelsSigma
 			for (int i = startIndex; i < endIndex; ++i)
 				builder.Append(src[i]);
 			return builder.ToString();
+		}
+		// Also include leading '/'
+		public static string GetRelativeUrl(string absolute)
+		{ 
+			int start = absolute.IndexOf('/', absolute.IndexOf('.'));
+			return Downloader.Substring(absolute, start, absolute.Length);
 		}
 	}
 }

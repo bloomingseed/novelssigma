@@ -33,14 +33,14 @@ namespace NovelsSigma
 			};
 			worker.RunWorkerCompleted += (sender, e) =>
 			{
-				if (e.Error != null)
-				{
-					MessageBox.Show(e.Error.Message, title + " Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-				if (e.Cancelled)
-				{
-					MessageBox.Show("Result discarded.", title + " Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
+				//if (e.Error != null)
+				//{
+				//	MessageBox.Show(e.Error.Message, title + " Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				//}
+				//if (e.Cancelled)
+				//{
+				//	MessageBox.Show("Result discarded.", title + " Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				//}
 				//else
 				//{
 				//	Downloader.ProcessResult res = e.Result as Downloader.ProcessResult;

@@ -45,7 +45,7 @@
 			// 
 			// cancelBttn
 			// 
-			this.cancelBttn.Location = new System.Drawing.Point(201, 66);
+			this.cancelBttn.Location = new System.Drawing.Point(300, 66);
 			this.cancelBttn.Margin = new System.Windows.Forms.Padding(4);
 			this.cancelBttn.Name = "cancelBttn";
 			this.cancelBttn.Size = new System.Drawing.Size(100, 28);
@@ -60,14 +60,14 @@
 			this.progressBar1.Location = new System.Drawing.Point(16, 30);
 			this.progressBar1.Margin = new System.Windows.Forms.Padding(4);
 			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(285, 28);
+			this.progressBar1.Size = new System.Drawing.Size(384, 28);
 			this.progressBar1.TabIndex = 2;
 			// 
 			// ProgressDialog
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(310, 104);
+			this.ClientSize = new System.Drawing.Size(413, 104);
 			this.Controls.Add(this.progressBar1);
 			this.Controls.Add(this.cancelBttn);
 			this.Controls.Add(this.captionLabel);
