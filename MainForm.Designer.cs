@@ -185,10 +185,12 @@
 			this.Controls.Add(this.enterBttn);
 			this.Controls.Add(this.chaptersListBox);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.KeyPreview = true;
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Novels Sigma";
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

@@ -19,17 +19,14 @@ namespace NovelsSigma
 		{
 			InitializeComponent();
 			this.Load += resetBttn_Click;
-
 			this.Icon = Resource.logo_icon;
+
 		}
 		
 		private void GotResultHandler()
 		{
 			BindCheckedListBox();
-			//
-			// check all items
-			for (int i = 0; i < chaptersListBox.Items.Count; ++i)
-				chaptersListBox.SetItemChecked(i, true);
+			CheckAllCheckedListBoxItems();
 
 			checkAllBttn.Enabled = uncheckAllBttn.Enabled = renameChapterBttn.Enabled
 			= downloadBttn.Enabled = resetBttn.Enabled = chaptersListBox.Enabled = saveFolderTextBox.Enabled = selectFolderBttn.Enabled = resetSaveLocationBttn.Enabled = true;
@@ -38,33 +35,33 @@ namespace NovelsSigma
 
 		private void enterBttn_Click(object sender, EventArgs e)
 		{
-				Uri url = null;
-				string dialogTitle = "Fetch chapter lists";
 			try
 			{
-				url = new Uri(urlTextBox.Text.Trim());
-			}
-			catch(Exception err) { MessageBox.Show(this, err.Message + "\r\nPlease try a different URL", "Fetch Chapter Lists Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+				Uri url = null;
+				string dialogTitle = "Fetch chapter lists";
 
-			ProgressDialog dialog = new ProgressDialog(dialogTitle);
-			dialog.worker.DoWork += (pbsher, arg) =>
-			{
-				BackgroundWorker bgrWorker = pbsher as BackgroundWorker;
-				arg.Result = new Downloader(Downloader.Process(Downloader.PreProcess((string)arg.Argument, bgrWorker, arg), bgrWorker, arg));
-			};
-			dialog.worker.RunWorkerCompleted += (pbsher, arg) =>
-			{
-				if (arg.Error != null)
-					MessageBox.Show(this, arg.Error.Message, "Fetch Chapter Lists Erorr", MessageBoxButtons.OK, MessageBoxIcon.Error); 
-				else if (!arg.Cancelled)
+				url = new Uri(urlTextBox.Text.Trim());
+
+				ProgressDialog dialog = new ProgressDialog(dialogTitle);
+				dialog.worker.DoWork += (pbsher, arg) =>
 				{
-					downloader = arg.Result as Downloader;
-					MessageBox.Show($"Fetched {downloader.Resource.Chapters.Count} chapters of \"{downloader.Resource.NovelName}\".", dialogTitle + " Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-					GotResultHandler();
-				}
-			};
-			dialog.ShowDialog(this, url.AbsoluteUri);
-			
+					BackgroundWorker bgrWorker = pbsher as BackgroundWorker;
+					arg.Result = new Downloader(Downloader.Process(Downloader.PreProcess((string)arg.Argument, bgrWorker, arg), bgrWorker, arg));
+				};
+				dialog.worker.RunWorkerCompleted += (pbsher, arg) =>
+				{
+					if (arg.Error != null)
+						MessageBox.Show(this, arg.Error.Message, "Fetch Chapter Lists Erorr", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					else if (!arg.Cancelled)
+					{
+						downloader = arg.Result as Downloader;
+						MessageBox.Show($"Fetched {downloader.Resource.Chapters.Count} chapters of \"{downloader.Resource.NovelName}\".", dialogTitle + " Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						GotResultHandler();
+					}
+				};
+				dialog.ShowDialog(this, url.AbsoluteUri);
+			}
+			catch (Exception err) { MessageBox.Show(this, err.Message + "\r\nPlease try a different URL", "Fetch Chapter Lists Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 		}
 		
 		private void BindCheckedListBox()
@@ -77,6 +74,11 @@ namespace NovelsSigma
 		}
 
 		private void checkAllBttn_Click(object sender, EventArgs e)
+		{
+			CheckAllCheckedListBoxItems();
+		}
+
+		private void CheckAllCheckedListBoxItems()
 		{
 			for (int i = 0; i < chaptersListBox.Items.Count; ++i)
 				chaptersListBox.SetItemChecked(i, true);
@@ -173,7 +175,18 @@ namespace NovelsSigma
 			catch (Exception err) { MessageBox.Show(err.Message, "Download Chapters Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 		}
 
-
+		private void MainForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Control && e.KeyCode == Keys.A)
+			{
+				if (urlTextBox.Focused)
+					urlTextBox.SelectAll();
+				else if (chaptersListBox.Focused)
+					CheckAllCheckedListBoxItems();
+				else if (saveFolderTextBox.Focused)
+					saveFolderTextBox.SelectAll();
+			}
+		}
 
 	}
 }
